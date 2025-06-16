@@ -1,11 +1,18 @@
 from uuid import uuid4
 from typing import Dict, List, Any
+from datetime import date, datetime
 
 
-db:  Dict[str, List[Dict[str, Any]]] = {
+db = {
     "users": [],
     "events": [],
-    "speakers": [{
+    "registrations": [],
+    "speakers": [
+
+    ],
+    "events": [],
+    "speakers": [
+        {
             "id": str(uuid4()),
             "name": "Prof Helen Owoaje",
             "topic": "The effects of climate change on public health"
@@ -22,6 +29,8 @@ db:  Dict[str, List[Dict[str, Any]]] = {
             "name": "Joshua Kingsley",
             "topic": "Cybersecurity Awareness in the age of Artificial Intelligence"
          
-        }],
-    "registrations": [],
+        }
+        
+        ],
+   
 }

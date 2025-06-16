@@ -1,7 +1,14 @@
 from pydantic import BaseModel
 from uuid import UUID
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
+
+
+class Speaker(BaseModel):
+    id: UUID
+    name: str
+    topic: str
+
 
 class EventBase(BaseModel):
     title: str
@@ -11,7 +18,7 @@ class EventBase(BaseModel):
 
 
 class EventCreate(EventBase):
-    pass
+    speakers: Optional[List[UUID]] = []
 
 
 class EventUpdate(BaseModel):
@@ -21,5 +28,10 @@ class EventUpdate(BaseModel):
     is_open: Optional[bool] = None
 
 
-class Event(EventBase):
+class Event(BaseModel):
     id: UUID
+    title: str
+    location: str
+    date: datetime
+    is_open: bool
+    speakers: List[Speaker]

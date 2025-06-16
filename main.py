@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from uuid import uuid4
 
 
-from routes import user, event, speaker, registration
+from routes import user, event, registration
+
 from database import db
 
 
@@ -14,17 +15,16 @@ app = FastAPI(
     version="1.0.0",
 )
 
+
 @app.get("/")
 def read_root():
-    return {"Welcome to my Event Management"}
+    return {"Welcome to my Event Management App"}
 
 
 app.include_router(event.router, prefix="/events", tags=["Events"])
 app.include_router(user.router, prefix="/users", tags=["Users"])
 app.include_router(registration.router, prefix="/registrations", tags=["Registration"])
-app.include_router(speaker.router, prefix="/speakers", tags=["Speakers"])
 
 
-#Initialize_speakers():
 
 

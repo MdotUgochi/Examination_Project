@@ -1,7 +1,8 @@
 from uuid import uuid4, UUID
 from fastapi import HTTPException
+from typing import List, Dict, Any
 
-from schemas.user import UserCreate, UserUpdate
+from schemas.user import UserCreate, UserUpdate, User
 from database import db
 
 
@@ -49,3 +50,19 @@ def deactivate_user(user_id: UUID):
             return user
     raise HTTPException(status_code=404, detail="User not found")
 
+
+#filter users who attended one event
+def get_users_who_attended_atleast_one_event() -> List[User]:
+    #get user IDs who attended at least one event
+    attended_user_ids = {
+        reg["user_id"]
+        for reg in db["registrations"]
+        if reg.get("attended") is True
+
+    }
+    
+    return [
+        User(**user)
+        for user in db["users"]
+        if user["id"] in attended_user_ids
+    ]

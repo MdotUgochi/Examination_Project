@@ -4,7 +4,7 @@ from typing import List
 
 from schemas.user import User, UserCreate, UserUpdate
 from services import user as user_service
-
+from services.user import get_users_who_attended_atleast_one_event
 
 router = APIRouter()
 
@@ -31,3 +31,7 @@ def delete_user(user_id: UUID):
 @router.patch("/{user_id}/deactivate", response_model=User)
 def deactivate_user(user_id: UUID):
     return user_service.deactivate_user(user_id)
+
+@router.get("/users/filter_attended", response_model=List[User])
+def users_who_attended():
+    return get_users_who_attended_atleast_one_event()

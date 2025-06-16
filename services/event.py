@@ -1,27 +1,24 @@
 from typing import List, Optional
 from uuid import UUID, uuid4
 from datetime import datetime
+import copy
 from database import db
-
 from schemas.event import EventBase, EventCreate, EventUpdate, Event
 
-#In-memory db for events
 
-def create_event(event_data: EventCreate) -> Event:
-    event_id = uuid4()
-    new_event = {
-        "id": event_id,
-        "title": event_data.title,
-        "location": event_data.location,
-        "date": event_data.date,
-        "is_open": True
-    }
+def create_event (event_data: EventCreate):
+     new_event = {
+         "id": uuid4(),
+         "title": event_data.title,
+         "location": event_data.location,
+         "date": event_data.date,
+         "is_open": True,
+         "speakers": db["speakers"] #automatically assign all users
+     }
 
-    db["events"].append(new_event)
-    return new_event
-
-
-
+     db["events"].append(new_event)
+     return new_event
+   
 
 def get_event(event_id: UUID) -> Optional[Event]:
     for event in db["events"]:
@@ -31,7 +28,17 @@ def get_event(event_id: UUID) -> Optional[Event]:
     
 
 def get_all_events() -> List[Event]:
-    return [_dict_to_event_model(event) for event in db["events"]]
+    results = []
+    print("Fecth all events")
+    for events in db["events"]:
+        try:
+            model = _dict_to_event_model(events)
+            results.append(model)
+        except Exception as e:
+             print("Error converting event:", events)
+             print("Exception:", e)
+    return results
+    
 
 
 def update_event(event_id: UUID, update_data: EventUpdate) -> Optional[Event]:
@@ -65,12 +72,30 @@ def delete_event(event_id: UUID) -> bool:
 
 
 def _dict_to_event_model(data: dict) -> Event:
+    
+    # Safely try to convert speakers into Speaker model list
+    speakers_raw = data.get("speakers", [])
+    valid_speakers = []
+
+    for s in speakers_raw:
+        try:
+            
+            # If speaker fields are valid
+            valid_speakers.append({
+                "id": UUID(s["id"]) if isinstance(s["id"], str) else s["id"],
+                "name": s["name"],
+                "topic": s["topic"]
+            })
+        except Exception as e:
+            print(f"⚠️ Skipping invalid speaker: {s} -> {e}")
+
     return Event(
         id=data["id"],
         title=data["title"],
         location=data["location"],
         date=data["date"],
-        is_open=data["is_open"]
-    )
- 
+        is_open=data.get("is_open", True),
+        speakers=valid_speakers
+        )
+
 
